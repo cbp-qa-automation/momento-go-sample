@@ -34,3 +34,4 @@ jobs:
           echo "choiceParam is '\${{ inputs.choiceParam}}'"
           echo "booleanParam is '\${{ inputs.booleanParam}}'"
           echo "numberParam is '\${{ inputs.numberParam}}'"
+          echo "test"
