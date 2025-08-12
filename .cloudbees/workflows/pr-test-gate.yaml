@@ -41,11 +41,11 @@ jobs:
           echo ${{ needs.code-quality.outputs.testrun  }}
           echo ${{ needs.code-quality.outputs.env  }}
           echo ${{ needs.code-quality.outputs.tags  }}
-          echo ${{ needs.code-quality.outputs.testrun == 'true' }}
+          echo ${{ needs.code-quality.outputs.testrun }} == 'true'
     
   test:
     needs: ['code-quality']
-    if: ${{ needs.code-quality.outputs.testrun == 'true' }}
+    if: ${{ needs.code-quality.outputs.testrun }} == 'true'
     steps:
       - uses: cloudbees-io/checkout@v1
       - name: Echo values
