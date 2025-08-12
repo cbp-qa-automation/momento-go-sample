@@ -1,0 +1,28 @@
+apiVersion: automation.cloudbees.io/v1alpha1
+kind: workflow
+name: My workflow
+on:
+  push:
+    branches:
+      - "**"
+jobs:
+  code-quality:
+    outputs:
+      output1: ${{ steps.setvalues.outputs.envvalue }}
+      output2: ${{ steps.setvalues.outputs.tagvalue }}
+      test-run: ${{ steps.se}}
+    steps:
+      
+      - uses: cloudbees-io/checkout@v1
+      - name: Say hello
+        id: setvalues
+        run: |
+          echo "hello world"
+        uses: docker://golang:1.20.3-alpine3.17
+        shell: sh
+    
+  test:
+    needs: ['code-quality']
+    steps:
+      - uses: cloudbees-io/checkout@v1
+    
