@@ -7,8 +7,8 @@ on:
 jobs:
   code-quality:
     outputs:
-      output1: ${{ steps.setvalues.outputs.envvalue }}
-      output2: ${{ steps.setvalues.outputs.tagvalue }}
+      env: ${{ steps.setvalues.outputs.envvalue }}
+      tags: ${{ steps.setvalues.outputs.tagvalue }}
       testrun: ${{ steps.setvalues.outputs.testrun }}
     steps:
       
@@ -19,9 +19,12 @@ jobs:
         shell: sh
         run: |
           echo "hello world"
-          echo "QA" > $CLOUDBEES_OUTPUTS/envvalue
-          echo "Login" > $CLOUDBEES_OUTPUTS/tagvalue
-          echo "false" > $CLOUDBEES_OUTPUTS/testrun
+          export ENV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Env:[^]]*\]' | sed 's/\[Env:\(.*\)\]/\1/' )
+          export GREP=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Grep:[^]]*\]' | sed 's/\[Grep:\(.*\)\]/\1/' ) || GREP=''
+          export GREPINV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[GrepInv:[^]]*\]' | sed 's/\[GrepInv:\(.*\)\]/\1/' ) || GREPINV=''
+          echo $ENV > $CLOUDBEES_OUTPUTS/envvalue
+          echo "--grep=\"${GREP}\" --grep-invert=\"${GREPINV}\"" > $CLOUDBEES_OUTPUTS/tagvalue
+          echo "true" > $CLOUDBEES_OUTPUTS/testrun
         
     
   test:
@@ -35,6 +38,6 @@ jobs:
         shell: sh
         run: |
           echo ${{ needs.code-quality.outputs.testrun  }}
-          echo ${{ needs.code-quality.outputs.output1  }}
-          echo ${{ needs.code-quality.outputs.output2  }}
+          echo ${{ needs.code-quality.outputs.env  }}
+          echo ${{ needs.code-quality.outputs.tags  }}
     
