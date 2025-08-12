@@ -18,7 +18,7 @@ jobs:
         uses: docker://alpine/git:v2.49.1
         shell: sh
         run: |
-          echo "true" > $CLOUDBEES_OUTPUTS/test-run
+          echo "one" > $CLOUDBEES_OUTPUTS/test-run
           echo "hello world"
           git log --pretty=format:"%s" -n 1
           export ENV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Env:[^]]*\]' | sed 's/\[Env:\(.*\)\]/\1/' )
@@ -41,11 +41,11 @@ jobs:
           echo ${{ needs.code-quality.outputs.testrun  }}
           echo ${{ needs.code-quality.outputs.env  }}
           echo ${{ needs.code-quality.outputs.tags  }}
-          echo ${{ needs.code-quality.outputs.testrun  == true }}
+          echo ${{ needs.code-quality.outputs.testrun  == 'one' }}
     
   test:
     needs: ['code-quality']
-    if: ${{ needs.code-quality.outputs.testrun  == true }}
+    if: ${{ needs.code-quality.outputs.testrun  == 'one' }}
     steps:
       - uses: cloudbees-io/checkout@v1
       - name: Echo values
