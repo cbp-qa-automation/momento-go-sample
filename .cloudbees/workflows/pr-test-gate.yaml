@@ -10,19 +10,24 @@ jobs:
     outputs:
       output1: ${{ steps.setvalues.outputs.envvalue }}
       output2: ${{ steps.setvalues.outputs.tagvalue }}
-      test-run: ${{ steps.se}}
+      test-run: ${{ steps.setvalues.outputs.testrun }}
     steps:
       
       - uses: cloudbees-io/checkout@v1
       - name: Say hello
         id: setvalues
-        run: |
-          echo "hello world"
         uses: docker://golang:1.20.3-alpine3.17
         shell: sh
+        run: |
+          echo "hello world"
+          echo "QA" > $CLOUDBEES_OUTPUTS/envvalue
+          echo "Login" > $CLOUDBEES_OUTPUTS/tagvalue
+          echo "true" > $CLOUDBEES_OUTPUTS/testrun
+        
     
   test:
     needs: ['code-quality']
+    if: ${{needs.code-quality.outputs.test-run == 'true' }}
     steps:
       - uses: cloudbees-io/checkout@v1
     
