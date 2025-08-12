@@ -3,13 +3,13 @@ kind: workflow
 name: My workflow
 on:
   workflow_dispatch:
-    
+
 jobs:
   code-quality:
     outputs:
       output1: ${{ steps.setvalues.outputs.envvalue }}
       output2: ${{ steps.setvalues.outputs.tagvalue }}
-      test-run: ${{ steps.setvalues.outputs.testrun }}
+      testrun: ${{ steps.setvalues.outputs.testrun }}
     steps:
       
       - uses: cloudbees-io/checkout@v1
@@ -21,12 +21,20 @@ jobs:
           echo "hello world"
           echo "QA" > $CLOUDBEES_OUTPUTS/envvalue
           echo "Login" > $CLOUDBEES_OUTPUTS/tagvalue
-          echo "true" > $CLOUDBEES_OUTPUTS/testrun
+          echo "false" > $CLOUDBEES_OUTPUTS/testrun
         
     
   test:
     needs: ['code-quality']
-    if: ${{needs.code-quality.outputs.test-run == 'true' }}
+    if: ${{needs.code-quality.outputs.testrun == 'true' }}
     steps:
       - uses: cloudbees-io/checkout@v1
+      - name: Echo values
+        id: setvalues
+        uses: docker://golang:1.20.3-alpine3.17
+        shell: sh
+        run: |
+          echo ${{ needs.code-quality.outputs.testrun  }}
+          echo ${{ needs.code-quality.outputs.output1  }}
+          echo ${{ needs.code-quality.outputs.output2  }}
     
