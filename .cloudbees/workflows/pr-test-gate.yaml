@@ -22,8 +22,11 @@ jobs:
           echo "hello world"
           git log --pretty=format:"%s" -n 1
           export ENV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Env:[^]]*\]' | sed 's/\[Env:\(.*\)\]/\1/' )
+          echo $ENV
           export GREP=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Grep:[^]]*\]' | sed 's/\[Grep:\(.*\)\]/\1/' ) || GREP=''
+          echo $GREP
           export GREPINV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[GrepInv:[^]]*\]' | sed 's/\[GrepInv:\(.*\)\]/\1/' ) || GREPINV=''
+          echo $GREPINV
           echo $ENV > $CLOUDBEES_OUTPUTS/envvalue
           echo "--grep=\"${GREP}\" --grep-invert=\"${GREPINV}\"" > $CLOUDBEES_OUTPUTS/tagvalue
           
@@ -31,7 +34,6 @@ jobs:
     
   test:
     needs: ['code-quality']
-    if: ${{needs.code-quality.outputs.testrun == 'true' }}
     steps:
       - uses: cloudbees-io/checkout@v1
       - name: Echo values
