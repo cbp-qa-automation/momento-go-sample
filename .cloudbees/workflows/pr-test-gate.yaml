@@ -15,7 +15,7 @@ jobs:
       - uses: cloudbees-io/checkout@v1
       - name: Say hello
         id: setvalues
-        uses: docker://golang:1.20.3-alpine3.17
+        uses: docker://alpine/git:v2.49.1
         shell: sh
         run: |
           echo "hello world"
