@@ -17,19 +17,22 @@ jobs:
         id: setvalues
         uses: docker://alpine/git:v2.49.1
         shell: sh
-        run: |
-          export TEST='one'
+        run: | 
           echo false > $CLOUDBEES_OUTPUTS/test-run
-          echo "hello world"
-          git log --pretty=format:"%s" -n 1
-          export ENV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Env:[^]]*\]' | sed 's/\[Env:\(.*\)\]/\1/' )
-          echo "Env"+$ENV
-          export GREP=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Grep:[^]]*\]' | sed 's/\[Grep:\(.*\)\]/\1/' ) || GREP=''
-          echo "Grep"+$GREP
-          export GREPINV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[GrepInv:[^]]*\]' | sed 's/\[GrepInv:\(.*\)\]/\1/' ) || GREPINV=''
-          echo "Non-Grep"+$GREPINV
-          echo $ENV > $CLOUDBEES_OUTPUTS/envvalue
-          echo "--grep=\"${GREP}\" --grep-invert=\"${GREPINV}\"" > $CLOUDBEES_OUTPUTS/tagvalue
+
+          LOG=$(git log --pretty=format:"%s" -n 1)
+          pattern = '^\[Env:(QA|PROD|PREPROD)\](?:\[Grep:(@\w+(?:\|@\w+)*)\])?(?:\[GrepInv:(@\w+(?:\|@\w+)*)\])?$'
+
+          if echo "$LOG" | grep -Eq "$pattern"; then
+              ENV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Env:[^]]*\]' | sed 's/\[Env:\(.*\)\]/\1/' )
+              GREP=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Grep:[^]]*\]' | sed 's/\[Grep:\(.*\)\]/\1/' ) || GREP=''
+              GREPINV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[GrepInv:[^]]*\]' | sed 's/\[GrepInv:\(.*\)\]/\1/' ) || GREPINV=''
+              echo $ENV > $CLOUDBEES_OUTPUTS/envvalue
+              echo "--grep=\"${GREP}\" --grep-invert=\"${GREPINV}\"" > $CLOUDBEES_OUTPUTS/tagvalue
+              echo true > $CLOUDBEES_OUTPUTS/test-run
+          else
+              echo false > $CLOUDBEES_OUTPUTS/test-run
+          fi
           
   echo:
     needs: ['code-quality']
