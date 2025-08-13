@@ -19,7 +19,7 @@ jobs:
         shell: sh
         run: |
           export TEST='one'
-          echo true > $CLOUDBEES_OUTPUTS/test-run
+          echo false > $CLOUDBEES_OUTPUTS/test-run
           echo "hello world"
           git log --pretty=format:"%s" -n 1
           export ENV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Env:[^]]*\]' | sed 's/\[Env:\(.*\)\]/\1/' )
