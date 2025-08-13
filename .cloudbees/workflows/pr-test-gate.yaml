@@ -21,7 +21,7 @@ jobs:
           echo false > $CLOUDBEES_OUTPUTS/test-run
 
           export LOG=$(git log --pretty=format:"%s" -n 1)
-          export pattern = '^\[Env:(QA|PROD|PREPROD)\](?:\[Grep:(@\w+(?:\|@\w+)*)\])?(?:\[GrepInv:(@\w+(?:\|@\w+)*)\])?$'
+          export pattern='^\[Env:(QA|PROD|PREPROD)\](?:\[Grep:(@\w+(?:\|@\w+)*)\])?(?:\[GrepInv:(@\w+(?:\|@\w+)*)\])?$'
 
           if echo "$LOG" | grep -Eq "$pattern"; then
               export ENV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Env:[^]]*\]' | sed 's/\[Env:\(.*\)\]/\1/' )
