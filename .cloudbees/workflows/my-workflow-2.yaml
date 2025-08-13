@@ -16,7 +16,7 @@ jobs:
         shell: sh
         run: |
           echo "hello world"
-          export ENV=true
+          export ENV=false
           echo $ENV
           echo $ENV > $CLOUDBEES_OUTPUTS/envvalue
   test:
