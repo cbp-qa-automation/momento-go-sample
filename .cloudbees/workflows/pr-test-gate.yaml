@@ -41,16 +41,16 @@ jobs:
           echo ${{ needs.code-quality.outputs.testrun  }}
           echo ${{ needs.code-quality.outputs.env  }}
           echo ${{ needs.code-quality.outputs.tags  }}
-          echo ${{ needs.code-quality.outputs.testrun  == 'one' }}
+          echo ${{ needs.code-quality.outputs.testrun  == one\n }}
     
   test:
     needs: ['code-quality']
     
     steps:
       - uses: cloudbees-io/checkout@v1
-      
+
       - name: Echo values
-        if: ${{ needs.code-quality.outputs.testrun == 'one' }}
+        if: ${{ needs.code-quality.outputs.testrun == one }}
         id: test
         uses: docker://golang:1.20.3-alpine3.17
         shell: sh
