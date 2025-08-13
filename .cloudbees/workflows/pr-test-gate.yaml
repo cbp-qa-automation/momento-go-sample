@@ -18,9 +18,7 @@ jobs:
         uses: docker://alpine/git:v2.49.1
         shell: sh
         run: | 
-          
           export LOG=$(git log --pretty=format:"%s" -n 1)
-
           if echo "$LOG" | grep -q '^\[Env'; then
               export ENV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Env:[^]]*\]' | sed 's/\[Env:\(.*\)\]/\1/' )
               export GREP=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Grep:[^]]*\]' | sed 's/\[Grep:\(.*\)\]/\1/' ) || GREP=''
