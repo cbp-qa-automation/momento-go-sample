@@ -45,10 +45,12 @@ jobs:
     
   test:
     needs: ['code-quality']
-    if: needs.code-quality.outputs.testrun=='one' 
+    
     steps:
       - uses: cloudbees-io/checkout@v1
+      
       - name: Echo values
+        if: ${{ needs.code-quality.outputs.testrun == 'one' }}
         id: test
         uses: docker://golang:1.20.3-alpine3.17
         shell: sh
