@@ -20,13 +20,13 @@ jobs:
         run: | 
           echo false > $CLOUDBEES_OUTPUTS/test-run
 
-          LOG=$(git log --pretty=format:"%s" -n 1)
-          pattern = '^\[Env:(QA|PROD|PREPROD)\](?:\[Grep:(@\w+(?:\|@\w+)*)\])?(?:\[GrepInv:(@\w+(?:\|@\w+)*)\])?$'
+          export LOG=$(git log --pretty=format:"%s" -n 1)
+          export pattern = '^\[Env:(QA|PROD|PREPROD)\](?:\[Grep:(@\w+(?:\|@\w+)*)\])?(?:\[GrepInv:(@\w+(?:\|@\w+)*)\])?$'
 
           if echo "$LOG" | grep -Eq "$pattern"; then
-              ENV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Env:[^]]*\]' | sed 's/\[Env:\(.*\)\]/\1/' )
-              GREP=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Grep:[^]]*\]' | sed 's/\[Grep:\(.*\)\]/\1/' ) || GREP=''
-              GREPINV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[GrepInv:[^]]*\]' | sed 's/\[GrepInv:\(.*\)\]/\1/' ) || GREPINV=''
+              export ENV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Env:[^]]*\]' | sed 's/\[Env:\(.*\)\]/\1/' )
+              export GREP=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Grep:[^]]*\]' | sed 's/\[Grep:\(.*\)\]/\1/' ) || GREP=''
+              export GREPINV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[GrepInv:[^]]*\]' | sed 's/\[GrepInv:\(.*\)\]/\1/' ) || GREPINV=''
               echo $ENV > $CLOUDBEES_OUTPUTS/envvalue
               echo "--grep=\"${GREP}\" --grep-invert=\"${GREPINV}\"" > $CLOUDBEES_OUTPUTS/tagvalue
               echo true > $CLOUDBEES_OUTPUTS/test-run
