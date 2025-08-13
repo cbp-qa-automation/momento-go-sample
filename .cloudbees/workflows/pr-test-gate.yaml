@@ -18,7 +18,8 @@ jobs:
         uses: docker://alpine/git:v2.49.1
         shell: sh
         run: |
-          echo "one" > $CLOUDBEES_OUTPUTS/test-run
+          export TEST='one'
+          echo $TEST > $CLOUDBEES_OUTPUTS/test-run
           echo "hello world"
           git log --pretty=format:"%s" -n 1
           export ENV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Env:[^]]*\]' | sed 's/\[Env:\(.*\)\]/\1/' )
@@ -41,7 +42,8 @@ jobs:
           echo ${{ needs.code-quality.outputs.testrun  }}
           echo ${{ needs.code-quality.outputs.env  }}
           echo ${{ needs.code-quality.outputs.tags  }}
-          echo ${{ needs.code-quality.outputs.testrun  == 'one\n' }}
+          echo ${{ needs.code-quality.outputs.testrun  == 'one' }}
+         
     
   test:
     needs: ['code-quality']
@@ -50,12 +52,16 @@ jobs:
       - uses: cloudbees-io/checkout@v1
 
       - name: Echo values
-        if: ${{ needs.code-quality.outputs.testrun == 'one' }}
         id: test
         uses: docker://golang:1.20.3-alpine3.17
         shell: sh
         run: |
-          echo ${{ needs.code-quality.outputs.testrun  }}
-          echo ${{ needs.code-quality.outputs.env  }}
-          echo ${{ needs.code-quality.outputs.tags  }}
+          if [ "${{ needs.code-quality.outputs.testrun }}" == "one" ]
+            echo ${{ needs.code-quality.outputs.testrun  }}
+            echo ${{ needs.code-quality.outputs.env  }}
+            echo ${{ needs.code-quality.outputs.tags  }}
+          else
+            echo "Failed"
+          fi
+         
     
