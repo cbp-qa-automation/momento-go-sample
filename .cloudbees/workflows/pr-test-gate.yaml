@@ -23,7 +23,7 @@ jobs:
           export LOG=$(git log --pretty=format:"%s" -n 1)
           export pattern='^\[Env:(QA|PROD|PREPROD)\](?:\[Grep:(@\w+(?:\|@\w+)*)\])?(?:\[GrepInv:(@\w+(?:\|@\w+)*)\])?$'
 
-          if echo "$LOG" | grep -Eq "$pattern"; then
+          if echo "$LOG" | grep -q '^\\\[Env'; then
               export ENV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Env:[^]]*\]' | sed 's/\[Env:\(.*\)\]/\1/' )
               export GREP=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Grep:[^]]*\]' | sed 's/\[Grep:\(.*\)\]/\1/' ) || GREP=''
               export GREPINV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[GrepInv:[^]]*\]' | sed 's/\[GrepInv:\(.*\)\]/\1/' ) || GREPINV=''
@@ -32,6 +32,8 @@ jobs:
               echo true > $CLOUDBEES_OUTPUTS/test-run
           else
               echo false > $CLOUDBEES_OUTPUTS/test-run
+              echo "" >  $CLOUDBEES_OUTPUTS/tagvalue
+              echo "" >  $CLOUDBEES_OUTPUTS/envvalue
           fi
           
   echo:
