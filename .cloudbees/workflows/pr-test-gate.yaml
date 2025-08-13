@@ -18,22 +18,22 @@ jobs:
         uses: docker://alpine/git:v2.49.1
         shell: sh
         run: | 
-          echo false > $CLOUDBEES_OUTPUTS/test-run
-
+          
           export LOG=$(git log --pretty=format:"%s" -n 1)
-          export pattern='^\[Env:(QA|PROD|PREPROD)\](?:\[Grep:(@\w+(?:\|@\w+)*)\])?(?:\[GrepInv:(@\w+(?:\|@\w+)*)\])?$'
 
-          if echo "$LOG" | grep -q '^\\\[Env'; then
+          if echo "$LOG" | grep -q '^\[Env'; then
               export ENV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Env:[^]]*\]' | sed 's/\[Env:\(.*\)\]/\1/' )
               export GREP=$(git log --pretty=format:"%s" -n 1 | grep -o '\[Grep:[^]]*\]' | sed 's/\[Grep:\(.*\)\]/\1/' ) || GREP=''
               export GREPINV=$(git log --pretty=format:"%s" -n 1 | grep -o '\[GrepInv:[^]]*\]' | sed 's/\[GrepInv:\(.*\)\]/\1/' ) || GREPINV=''
               echo $ENV > $CLOUDBEES_OUTPUTS/envvalue
               echo "--grep=\"${GREP}\" --grep-invert=\"${GREPINV}\"" > $CLOUDBEES_OUTPUTS/tagvalue
               echo true > $CLOUDBEES_OUTPUTS/test-run
+              echo "Successfully set the Env: $ENV with Grep: $GREP and GrepInv: $GREPINV"
           else
               echo false > $CLOUDBEES_OUTPUTS/test-run
               echo "" >  $CLOUDBEES_OUTPUTS/tagvalue
               echo "" >  $CLOUDBEES_OUTPUTS/envvalue
+              echo "Disable the test execution job"
           fi
           
   echo:
