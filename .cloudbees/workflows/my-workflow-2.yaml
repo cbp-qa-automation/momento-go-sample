@@ -16,12 +16,12 @@ jobs:
         shell: sh
         run: |
           echo "hello world"
-          export ENV=QA
+          export ENV=true
           echo $ENV
           echo $ENV > $CLOUDBEES_OUTPUTS/envvalue
   test:
     needs: [ 'build' ]
-    if: ${{ needs.build.outputs.env == 'QA' }}
+    if: ${{ needs.build.outputs.env }}
     steps:
       - name: Say hello
         uses: docker://golang:1.20.3-alpine3.17
